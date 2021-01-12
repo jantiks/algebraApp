@@ -23,8 +23,7 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
     
     var runningNumber = ""
     var currentNumber = ""
-    var rightHandSide = [String]()
-    var leftHandSide = [String]()
+    
     var result = ""
     var currentOperation: Operation = .Null
     var equalIsTapped = false
@@ -47,32 +46,7 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
             equationTF.text! = runningNumber
         }
     }
-    
-    // sorts numbers to leftHandSide and rightHandSide
-//    func sortNumbers() {
-//        if !currentNumber.isEmpty {
-//            if equalIsTapped {
-//                if subtractIsTapped {
-//                    rightHandSide.append("-\(currentNumber)")
-//                    subtractIsTapped = false
-//                } else {
-//                    rightHandSide.append("\(currentNumber)")
-//                }
-//
-//            } else {
-//                if subtractIsTapped {
-//                    leftHandSide.append("-\(currentNumber)")
-//                    subtractIsTapped = false
-//                } else {
-//                    leftHandSide.append("\(currentNumber)")
-//                }
-//            }
-//            print(leftHandSide,rightHandSide)
-//            currentNumber = ""
-//        }
-//
-//    }
-    
+
     func containsBracket(expression: String) -> Bool {
         return expression.contains("(")
     }
@@ -160,8 +134,75 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
     }
     
     //collects like terms in same array
-    func collectLikeTerms (leftHandSide: [String], rightHandSide: [String]) -> [String] {
-        return ["a"]
+    func collectLikeTerms (leftHandSide: [String], rightHandSide: [String]) -> [[String]] {
+        var variables = [String]()
+        var constants = [String]()
+        
+        for i in 0..<leftHandSide.count {
+            let elem = leftHandSide[i]
+            if let digit = Int(elem) {
+                let const = Int(-1 * digit)
+                constants.append(String(const))
+            } else {
+                variables.append(elem)
+            }
+        
+        }
+        
+        for j in 0..<rightHandSide.count {
+            let elem = rightHandSide[j]
+            if let digit = Int(elem) {
+                let const = Int(-1 * digit)
+                constants.append(String(const))
+            } else {
+                variables.append(changeVariableSign(variable: elem))
+                
+            }
+        }
+        var result = [[""],[""]]
+        result[0] = variables
+        result[1] = constants
+        return result
+    }
+    
+    //merges left and right hand sides for displaying on app
+    func getSolution(leftHandSide: [String], rightHandSide: [String]) -> String {
+        
+        var leftHandSolution = ""
+        var rightHandSolution = ""
+        
+        for i in 0..<leftHandSide.count {
+            if i == 0 {
+                leftHandSolution = leftHandSide[i]
+            } else {
+                leftHandSolution = leftHandSolution + " " + getSolutionVar(variable: leftHandSide[i])
+            }
+        }
+        
+        for i in 0..<rightHandSide.count {
+            if i == 0 {
+                rightHandSolution = rightHandSide[i]
+            } else {
+                rightHandSolution = rightHandSolution + " " + getSolutionVar(variable: rightHandSide[i])
+            }
+        }
+        
+        return leftHandSolution + " = " + rightHandSolution
+        
+    }
+    
+    //simplifies expression
+    func simplifyExpression(expression: [String]) -> String {
+        var coefficient = 0
+        for i in 0..<expression.count {
+            coefficient += getCoefficient(variable: expression[i])
+        }
+        
+//        if coefficient == 1
+    }
+    
+    func getSolutionVar(variable: String) -> String {
+        return ""
     }
     
     func solve() {
@@ -174,9 +215,7 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
         
         if !equationTF.text!.isEmpty {
             solve()
-            if !currentNumber.isEmpty {
-                rightHandSide.append(currentNumber)
-            }
+            
             guard let svc = storyboard?.instantiateViewController(identifier: "solve") else { return }
             navigationController?.pushViewController(svc, animated: true)
         } else {
