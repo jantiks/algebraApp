@@ -21,6 +21,8 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
     @IBOutlet weak var equationTF: UITextField!
     @IBOutlet weak var calculateButton: UIButton!
     
+    let variable = "x"
+    
     var runningNumber = ""
     var currentNumber = ""
     
@@ -152,7 +154,7 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
         for j in 0..<rightHandSide.count {
             let elem = rightHandSide[j]
             if let digit = Int(elem) {
-                let const = Int(-1 * digit)
+                let const = Int(digit)
                 constants.append(String(const))
             } else {
                 variables.append(changeVariableSign(variable: elem))
@@ -191,30 +193,68 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
         
     }
     
-    //simplifies expression
+    //simplifies variables
     func simplifyExpression(expression: [String]) -> String {
         var coefficient = 0
-        for i in 0..<expression.count {
-            coefficient += getCoefficient(variable: expression[i])
+        for i in expression {
+            coefficient += getCoefficient(variable: i)
         }
         
-//        if coefficient == 1
+        if coefficient == 1 {
+            return variable
+        } else if coefficient == -1 {
+            return "-" + variable
+        }
+        return String(coefficient) + variable
     }
     
+    //simplifies constants
+    func simplifyConstants(constants: [String]) -> String {
+        var constSum = 0
+        for i in constants {
+            constSum += Int(i)!
+        }
+        return String(constSum)
+    }
+    //gets the variable and the sign in getSolution method.
     func getSolutionVar(variable: String) -> String {
-        return ""
+        let firstChar = variable[0]
+        if firstChar == "+" {
+            return variable.replacingOccurrences(of: "+", with: "+ ")
+        } else if firstChar == "-" {
+            return variable.replacingOccurrences(of: "-", with: "- ")
+        }
+        return "+ " + variable
     }
     
-    func solve() {
-        print(runningNumber)
-        print(split(equation: runningNumber))
+    //checks if what the user enters is a valid linear equation
+    func isValidEquation() -> Bool {
+        return true
+    }
+    
+    func solve(equation: String) {
+        let leftHandSide = String(equation.split(separator: "=")[0])
+        let rightHandSide = String(equation.split(separator: "=")[1])
+        
+        var leftHandSideArr = split(equation: leftHandSide)
+        var rightHandSideArr = split(equation: rightHandSide)
+        
+        let result = collectLikeTerms(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr)
+        leftHandSideArr = result[0]
+        rightHandSideArr = result[1]
+        
+        let leftSolution = simplifyExpression(expression: leftHandSideArr)
+        let rightSolution = simplifyConstants(constants: rightHandSideArr)
+        
+        print(leftSolution , rightSolution)
+        
     }
     
     
     @IBAction func calculateTapped(_ sender: UIButton) {
         
         if !equationTF.text!.isEmpty {
-            solve()
+            solve(equation: equationTF.text!)
             
             guard let svc = storyboard?.instantiateViewController(identifier: "solve") else { return }
             navigationController?.pushViewController(svc, animated: true)
