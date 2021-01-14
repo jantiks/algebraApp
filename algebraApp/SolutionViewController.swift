@@ -89,23 +89,20 @@ class SolutionViewController: UIViewController {
         var coefficient = ""
         if variable.count == 1 {
             return 1
-        } else if variable.count == 1 && variable[0] == "-" {
+        } else if variable.count == 2 && variable[0] == "-" {
             return -1
+        } else if variable.count == 2 && variable[0] == "+" {
+            return 1
         }
         
         for i in 0..<variable.count {
             if let coef = Int(String(variable[i])) {
                 coefficient += String(coef)
-            } else {
-                coefficient = "1"
             }
         }
         if variable[0] == "-" {
-//            print(variable, coefficient)
-//            print(coefficient,variable)
             return -Int(coefficient)!
         }
-//        print(coefficient,variable)
         return Int(coefficient)!
     }
     
@@ -179,7 +176,6 @@ class SolutionViewController: UIViewController {
         } else if coefficient == -1 {
             return "-" + variable
         }
-        print(String(coefficient) + variable)
         return String(coefficient) + variable
     }
     
@@ -219,10 +215,8 @@ class SolutionViewController: UIViewController {
         
         //collectting constants and variables
         let result = collectLikeTerms(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr)
-        print(result)
         leftHandSideArr = result[0]
         rightHandSideArr = result[1]
-        print(rightHandSideArr , "right side")
         print("step:1 lets connect like varibales in leftHandSIde and constants in the other")
         print(getSolution(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr))
         
