@@ -94,13 +94,18 @@ class SolutionViewController: UIViewController {
         }
         
         for i in 0..<variable.count {
-            if let _ = Int(String(variable[i])) {
-                coefficient += String(variable[i])
+            if let coef = Int(String(variable[i])) {
+                coefficient += String(coef)
+            } else {
+                coefficient = "1"
             }
         }
         if variable[0] == "-" {
-            return Int("-" + coefficient)!
+//            print(variable, coefficient)
+//            print(coefficient,variable)
+            return -Int(coefficient)!
         }
+//        print(coefficient,variable)
         return Int(coefficient)!
     }
     
@@ -174,6 +179,7 @@ class SolutionViewController: UIViewController {
         } else if coefficient == -1 {
             return "-" + variable
         }
+        print(String(coefficient) + variable)
         return String(coefficient) + variable
     }
     
@@ -195,9 +201,6 @@ class SolutionViewController: UIViewController {
         }
         return "+ " + variable
     }
-    func showTheExpression() {
-        
-    }
     
     //checks if what the user enters is a valid linear equation
     func isValidEquation() -> Bool {
@@ -205,22 +208,37 @@ class SolutionViewController: UIViewController {
     }
     
     func solve(equation: String) {
+        //shows equation
         print("this is your equation \(equation)")
         let leftHandSide = String(equation.split(separator: "=")[0])
         let rightHandSide = String(equation.split(separator: "=")[1])
         
+        //spliting two sides of equation
         var leftHandSideArr = split(equation: leftHandSide)
         var rightHandSideArr = split(equation: rightHandSide)
         
+        //collectting constants and variables
         let result = collectLikeTerms(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr)
         print(result)
         leftHandSideArr = result[0]
         rightHandSideArr = result[1]
-        print("lets connect like varibales in leftHandSIde and constants in the other")
-//        print((leftHandSideArr) + " = " + (rightHandSideArr))
+        print(rightHandSideArr , "right side")
+        print("step:1 lets connect like varibales in leftHandSIde and constants in the other")
+        print(getSolution(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr))
+        
+        //simplifing left and right sides
         let leftSolution = simplifyExpression(expression: leftHandSideArr)
         let rightSolution = simplifyConstants(constants: rightHandSideArr)
-        print(leftSolution , rightSolution)
+        print("step2: lets simplify the expression")
+        print(getSolution(leftHandSide: [leftSolution], rightHandSide: [rightSolution]))
+        
+        //finding variable
+        let coef = getCoefficient(variable: leftSolution)
+        if coef != 1 {
+            print("step3: divide both parts by \(coef)")
+            let rightSol = (Float(rightSolution)!)/Float(coef)
+            print(variable + " = " + String(rightSol))
+        }
         
     }
     
