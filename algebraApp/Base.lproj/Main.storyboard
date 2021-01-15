@@ -437,6 +437,9 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Jl3-1n-tWU"/>
                     </view>
+                    <connections>
+                        <outlet property="scrollContent" destination="YWo-Dn-B5z" id="tPy-1S-oLF"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PSB-jI-3Yn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>

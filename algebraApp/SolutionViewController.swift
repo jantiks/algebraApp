@@ -12,6 +12,9 @@ class SolutionViewController: UIViewController {
     
     let variable = "x"
     var equation = ""
+    var contentViewHeight: CGFloat = 0
+    
+    @IBOutlet weak var scrollContent: UIView!
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -112,10 +115,19 @@ class SolutionViewController: UIViewController {
         var constants = [String]()
         
         for i in 0..<leftHandSide.count {
-            let elem = leftHandSide[i]
+            var elem = leftHandSide[i]
             if let digit = Int(elem) {
                 let const = Int(-1 * digit)
                 constants.append(String(const))
+            } else if elem.contains("*") || elem.contains("/") && !elem.contains("x") {
+                if elem[0] == "+" {
+                    elem.removeFirst()
+                    constants.append(String("-" + elem))
+                } else if elem[0] == "-" {
+                    elem.removeFirst()
+                    constants.append(String("+" + elem))
+                }
+                
             } else {
                 variables.append(elem)
             }
@@ -127,9 +139,10 @@ class SolutionViewController: UIViewController {
             if let digit = Int(elem) {
                 let const = Int(digit)
                 constants.append(String(const))
+            } else if elem.contains("*") || elem.contains("/") && !elem.contains("x") {
+                constants.append(String(elem))
             } else {
                 variables.append(changeVariableSign(variable: elem))
-                
             }
         }
         var result = [[""],[""]]
@@ -181,9 +194,31 @@ class SolutionViewController: UIViewController {
     
     //simplifies constants
     func simplifyConstants(constants: [String]) -> String {
-        var constSum = 0
-        for i in constants {
-            constSum += Int(i)!
+        var constSum: Double = 0
+        for number in constants {
+            if let digit = Double(number) {
+                constSum += digit
+            } else if number.contains("*") {
+                var result = 1
+                let components = number.split(separator: "*")
+                for comps in components {
+                    if let digit = Int(String(comps)) {
+                        result *= digit
+                    }
+                }
+                constSum += Double(result)
+            } else if number.contains("/") {
+                let components = number.split(separator: "/")
+                var result = Double(components[0])
+                for i in 1..<components.count {
+                    if let digit = Double(String(components[i])) {
+                         result! /= digit
+                    }
+                   
+                }
+                constSum += result!
+            }
+            
         }
         return String(constSum)
     }
@@ -203,9 +238,20 @@ class SolutionViewController: UIViewController {
         return true
     }
     
-    func displaySteps(step: Int, labelText: String , equation: String) {
+    func displaySteps(labelText: String , equation: String) {
         let label = UILabel()
-        label.frame.size.width = self.view.frame.width - 10
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .left
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.frame.size.width = self.scrollContent.frame.width - 10
+        label.text = labelText
+        label.font = label.font.withSize(20)
+        scrollContent.addSubview(label)
+        
+        NSLayoutConstraint.activate([label.topAnchor.constraint(equalTo: scrollContent.layoutMarginsGuide.topAnchor, constant: contentViewHeight)])
+        
+        contentViewHeight += label.frame.size.height
     }
     
     func solve(equation: String) {
@@ -222,13 +268,15 @@ class SolutionViewController: UIViewController {
         let result = collectLikeTerms(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr)
         leftHandSideArr = result[0]
         rightHandSideArr = result[1]
-        print("step:1 lets connect like varibales in leftHandSIde and constants in the other")
+        print("step1: lets connect like varibales in leftHandSIde and constants in the other")
+//        displaySteps(labelText: "step1: lets connect like varibales in leftHandSIde and constants in the other", equation: "2x")
         print(getSolution(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr))
         
         //simplifing left and right sides
         let leftSolution = simplifyExpression(expression: leftHandSideArr)
         let rightSolution = simplifyConstants(constants: rightHandSideArr)
         print("step2: lets simplify the expression")
+//        displaySteps(labelText: "step2: lets simplify the expression", equation: "2x")
         print(getSolution(leftHandSide: [leftSolution], rightHandSide: [rightSolution]))
         
         //finding variable
