@@ -99,6 +99,9 @@ class SolutionViewController: UIViewController {
         }
         
         for i in 0..<variable.count {
+            if variable[i] == "." {
+                break
+            }
             if let coef = Int(String(variable[i])) {
                 coefficient += String(coef)
             }
