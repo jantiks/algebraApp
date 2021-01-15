@@ -71,8 +71,25 @@ class SolutionViewController: UIViewController {
     
     //expands expretion if it contains brackets
     func expand(_ expression: String) -> [String] {
-        //TODO: write the function
-        return ["A"]
+        
+        let expr = expression.split(separator: "(")
+        let multiplier = expr[0] == "-" || expr[0] == "+" ? Int(expr[0] + "1") : Int(expr[0])
+        var result = [String]()
+        let exprInBracket = split(equation: getExprInBracket(String(expr[1])))
+        for i in 0..<exprInBracket.count {
+            let elem = exprInBracket[i]
+//            if elem.contains(")") {
+//                elem.removeLast()
+//            }
+            if let constant: Int = (multiplier! * Int(elem)!) {
+                result.append(String(constant))
+            } else {
+                let newCoef = getCoefficient(variable: elem) * multiplier!
+                result.append(String(newCoef) + variable)
+            }
+        }
+        
+        return result
     }
     
     //changes variable sign
@@ -290,16 +307,30 @@ class SolutionViewController: UIViewController {
     
     func displaySteps(labelText: String , equation: String) {
         let label = UILabel()
+        let equationLabel = UILabel()
+        
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .left
         label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
         label.frame.size.width = self.scrollContent.frame.width - 10
+        label.frame.size.height = 100
         label.text = labelText
-        label.font = label.font.withSize(20)
+        label.font = label.font.withSize(19)
+        
+        equationLabel.translatesAutoresizingMaskIntoConstraints = false
+        equationLabel.textAlignment = .left
+        equationLabel.frame.size.width = self.scrollContent.frame.width - 10
+        equationLabel.text = equation
+        equationLabel.font = equationLabel.font.withSize(17)
+        
+        scrollContent.addSubview(equationLabel)
         scrollContent.addSubview(label)
         
-        NSLayoutConstraint.activate([label.topAnchor.constraint(equalTo: scrollContent.layoutMarginsGuide.topAnchor, constant: contentViewHeight)])
+        NSLayoutConstraint.activate(
+            [label.topAnchor.constraint(equalTo: scrollContent.layoutMarginsGuide.topAnchor, constant: contentViewHeight),
+             label.trailingAnchor.constraint(equalTo: scrollContent.trailingAnchor),
+             label.leadingAnchor.constraint(equalTo: scrollContent.leadingAnchor),
+            equationLabel.topAnchor.constraint(equalTo: label.layoutMarginsGuide.bottomAnchor, constant: 10)])
         
         contentViewHeight += label.frame.size.height
     }
@@ -314,27 +345,35 @@ class SolutionViewController: UIViewController {
         var leftHandSideArr = split(equation: leftHandSide)
         var rightHandSideArr = split(equation: rightHandSide)
         
+        if containsBracket(expression: equation) {
+            if containsBracket(expression: leftHandSide)  {
+                leftHandSideArr = openBracket(equationComponents: leftHandSideArr)
+            }
+            if containsBracket(expression: rightHandSide) {
+                rightHandSideArr = openBracket(equationComponents: rightHandSideArr)
+            }
+        }
+        
+        
         //collectting constants and variables
         let result = collectLikeTerms(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr)
         leftHandSideArr = result[0]
         rightHandSideArr = result[1]
-        print("step1: lets connect like varibales in leftHandSIde and constants in the other")
-//        displaySteps(labelText: "step1: lets connect like varibales in leftHandSIde and constants in the other", equation: "2x")
-        print(getSolution(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr))
+        print("step1: lets collect like varibales in leftHandSIde and constants in the other")
+        displaySteps(labelText: "step1: lets connect like varibales in leftHandSIde and constants in the other", equation: getSolution(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr))
+        
         
         //simplifing left and right sides
         let leftSolution = simplifyExpression(expression: leftHandSideArr)
         let rightSolution = simplifyConstants(constants: rightHandSideArr)
         print("step2: lets simplify the expression")
-//        displaySteps(labelText: "step2: lets simplify the expression", equation: "2x")
-        print(getSolution(leftHandSide: [leftSolution], rightHandSide: [rightSolution]))
+        displaySteps(labelText: "step2: lets simplify the expression", equation: getSolution(leftHandSide: [leftSolution], rightHandSide: [rightSolution]))
         
         //finding variable
         let coef = getCoefficient(variable: leftSolution)
         if coef != 1 {
-            print("step3: divide both parts by \(coef)")
             let rightSol = (Float(rightSolution)!)/Float(coef)
-            print(variable + " = " + String(rightSol))
+            displaySteps(labelText: "step3: divide both parts by \(coef)", equation: variable + " = " + String(rightSol))
         }
         
     }
