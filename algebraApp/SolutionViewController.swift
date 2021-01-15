@@ -203,6 +203,11 @@ class SolutionViewController: UIViewController {
         return true
     }
     
+    func displaySteps(step: Int, labelText: String , equation: String) {
+        let label = UILabel()
+        label.frame.size.width = self.view.frame.width - 10
+    }
+    
     func solve(equation: String) {
         //shows equation
         print("this is your equation \(equation)")
