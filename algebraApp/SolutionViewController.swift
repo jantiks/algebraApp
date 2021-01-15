@@ -113,13 +113,13 @@ class SolutionViewController: UIViewController {
     func collectLikeTerms (leftHandSide: [String], rightHandSide: [String]) -> [[String]] {
         var variables = [String]()
         var constants = [String]()
-        
+        print(leftHandSide, "this is left hand side")
         for i in 0..<leftHandSide.count {
             var elem = leftHandSide[i]
             if let digit = Int(elem) {
                 let const = Int(-1 * digit)
                 constants.append(String(const))
-            } else if elem.contains("*") || elem.contains("/") && !elem.contains("x") {
+            } else if (elem.contains("*") || elem.contains("/")) && !elem.contains("x") {
                 if elem[0] == "+" {
                     elem.removeFirst()
                     constants.append(String("-" + elem))
@@ -129,6 +129,7 @@ class SolutionViewController: UIViewController {
                 }
                 
             } else {
+                print(elem)
                 variables.append(elem)
             }
         
@@ -139,7 +140,7 @@ class SolutionViewController: UIViewController {
             if let digit = Int(elem) {
                 let const = Int(digit)
                 constants.append(String(const))
-            } else if elem.contains("*") || elem.contains("/") && !elem.contains("x") {
+            } else if (elem.contains("*") || elem.contains("/")) && !elem.contains("x") {
                 constants.append(String(elem))
             } else {
                 variables.append(changeVariableSign(variable: elem))
@@ -180,8 +181,34 @@ class SolutionViewController: UIViewController {
     //simplifies variables
     func simplifyExpression(expression: [String]) -> String {
         var coefficient = 0
+        print(expression)
+
         for i in expression {
-            coefficient += getCoefficient(variable: i)
+            if i.contains("*") {
+                print(i)
+                var coef = 1
+                let components = i.split(separator: "*").map({ (substring) in
+                    return String(substring)
+                })
+                for j in 0..<components.count {
+                    if let digit = Int(components[j]){
+                        coef *= digit
+                    } else {
+                        let variableCoef = getCoefficient(variable: components[j])
+                        coef *= variableCoef
+                    }
+
+
+                }
+                coefficient += coef
+            } else if expression.contains("/")  {
+
+            } else {
+                coefficient += getCoefficient(variable: i)
+            
+            }
+            
+
         }
         
         if coefficient == 1 {
