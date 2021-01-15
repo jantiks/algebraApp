@@ -180,12 +180,11 @@ class SolutionViewController: UIViewController {
     
     //simplifies variables
     func simplifyExpression(expression: [String]) -> String {
-        var coefficient = 0
+        var coefficient: Double = 0
         print(expression)
 
         for i in expression {
             if i.contains("*") {
-                print(i)
                 var coef = 1
                 let components = i.split(separator: "*").map({ (substring) in
                     return String(substring)
@@ -197,14 +196,35 @@ class SolutionViewController: UIViewController {
                         let variableCoef = getCoefficient(variable: components[j])
                         coef *= variableCoef
                     }
-
-
                 }
-                coefficient += coef
-            } else if expression.contains("/")  {
-
+                coefficient += Double(coef)
+            } else if i.contains("/")  {
+                var coef: Double = 1
+                let components = i.split(separator: "/").map({ (substring) in
+                    return String(substring)
+                })
+                for j in 0..<components.count {
+                    if let digit = Int(components[j]){
+                        if j == 0 {
+                            coef = Double(digit)
+                        } else {
+                            coef /= Double(digit)
+                        }
+                    } else {
+                        let variableCoef = getCoefficient(variable: components[j])
+                        if j == 0 {
+                            coef = Double(variableCoef)
+                        } else {
+                            coef /= Double(variableCoef)
+                        }
+                        
+                        
+                    }
+                }
+                print("this is coef \(coef)")
+                coefficient += Double(coef)
             } else {
-                coefficient += getCoefficient(variable: i)
+                coefficient += Double(getCoefficient(variable: i))
             
             }
             
