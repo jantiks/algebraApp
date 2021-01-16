@@ -26,14 +26,23 @@
                                                 <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                                 <textInputTraits key="textInputTraits"/>
                                             </textField>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CHT-s7-WqF">
+                                                <rect key="frame" x="20" y="128" width="334" height="18"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                <color key="textColor" systemColor="systemRedColor" red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <constraints>
                                             <constraint firstItem="j9b-oZ-cYy" firstAttribute="centerY" secondItem="Sau-wM-ue9" secondAttribute="centerY" id="6x9-Zh-E5V"/>
                                             <constraint firstItem="j9b-oZ-cYy" firstAttribute="leading" secondItem="Sau-wM-ue9" secondAttribute="leading" constant="20" id="Efc-nz-qCO"/>
+                                            <constraint firstItem="CHT-s7-WqF" firstAttribute="top" secondItem="j9b-oZ-cYy" secondAttribute="bottom" constant="10" id="RuA-ec-Ath"/>
+                                            <constraint firstAttribute="trailing" secondItem="CHT-s7-WqF" secondAttribute="trailing" constant="20" id="Y3X-hf-huw"/>
                                             <constraint firstAttribute="bottom" secondItem="j9b-oZ-cYy" secondAttribute="bottom" constant="60" id="eOc-dq-koe"/>
                                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="j9b-oZ-cYy" secondAttribute="trailing" id="gFY-qH-B2B"/>
                                             <constraint firstItem="j9b-oZ-cYy" firstAttribute="centerX" secondItem="Sau-wM-ue9" secondAttribute="centerX" id="gw8-n6-s3s"/>
                                             <constraint firstItem="j9b-oZ-cYy" firstAttribute="top" secondItem="Sau-wM-ue9" secondAttribute="top" constant="60" id="iSm-VR-arI"/>
+                                            <constraint firstItem="CHT-s7-WqF" firstAttribute="leading" secondItem="Sau-wM-ue9" secondAttribute="leading" constant="20" id="or9-CF-jVO"/>
                                             <constraint firstAttribute="height" constant="178" id="rrw-aL-W31"/>
                                         </constraints>
                                     </view>
@@ -339,6 +348,7 @@
                         <outlet property="calculateButton" destination="seZ-kk-9DK" id="Xuz-n3-iR6"/>
                         <outlet property="equationTF" destination="j9b-oZ-cYy" id="h5s-2h-wNN"/>
                         <outlet property="equationView" destination="Sau-wM-ue9" id="esK-I5-yUY"/>
+                        <outlet property="warnLabel" destination="CHT-s7-WqF" id="IQD-Vr-9FW"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

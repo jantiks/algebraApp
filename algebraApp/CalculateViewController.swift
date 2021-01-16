@@ -8,34 +8,29 @@
 
 import UIKit
 
-enum Operation: String {
-    case Add = "+"
-    case Subtract = "-"
-    case Multiply = "*"
-    case Divide = "/"
-    case Null = "Null"
-}
 
 class CalculateViewController: UIViewController, UINavigationControllerDelegate {
     @IBOutlet weak var equationView: UIView!
     @IBOutlet weak var equationTF: UITextField!
     @IBOutlet weak var calculateButton: UIButton!
+    @IBOutlet weak var warnLabel: UILabel!
     
     let variable = "x"
-    
     var runningNumber = ""
-    var currentNumber = ""
     
     var result = ""
-    var currentOperation: Operation = .Null
     var equalIsTapped = false
     var subtractIsTapped = false
+    
+    var timeRemaining = 3
+    var timer = Timer()
     override func viewDidLoad() {
         super.viewDidLoad()
         
         equationView.layer.borderWidth = 2
         equationView.layer.borderColor = UIColor.darkGray.cgColor
         calculateButton.layer.cornerRadius = 4
+        warnLabel.isHidden = true
         
         
     }
@@ -48,25 +43,97 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
         }
     }
 
+    //checks if what the user enters is a valid linear equation
+    func isValidEquation() -> Bool {
+        guard let text = equationTF.text else { return false }
+        if !isNotEmpty(text) {
+            return false
+        } else {
+            if !hasEqualSign(text) {
+                return false
+            }
+        }
+        if !hasVariable(text) {
+            return false
+        }
+        
+        if !bracketsAreClosed(text) {
+            return false
+        }
+        
+        return true
+    }
+    // checks if equation has variable
+    func hasVariable(_ equation: String) -> Bool {
+        if equation.contains(variable) {
+            return true
+        }
+        showWarnLabel("Your equation doesn't have variable")
+        return false
+    }
     
+    //checks if equation is empty
+    func isNotEmpty(_ equation: String) -> Bool {
+        if !equation.isEmpty {
+            return true
+        }
+        showWarnLabel("Your equation is empty")
+        return false
+    }
+    // checks if brackets are closed
+    func bracketsAreClosed(_ equation: String) -> Bool {
+        return true
+    }
+    
+    func hasEqualSign(_ equation: String) -> Bool {
+        if equation.count > 2 {
+            for i in 1..<(equation.count - 1) {
+                if equation[i] == "=" {
+                    return true
+                }
+            }
+        }
+        
+        showWarnLabel("Your equation doesn't have '=' sign")
+        return false
+        
+    }
+    
+    func showWarnLabel(_ text: String) {
+        warnLabel.isHidden = false
+        warnLabel.text = text
+        hideWarnLabel()
+    }
+    
+    func hideWarnLabel() {
+        _ = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) {
+            [weak self] timer in
+            self?.warnLabel.isHidden = true
+        }
+    }
+    
+    @objc func count() {
+        if timeRemaining > 0 {
+            print("passed this")
+            timeRemaining -= 1
+        } else {
+            timer.invalidate()
+            timeRemaining = 3
+        }
+    }
     
     @IBAction func calculateTapped(_ sender: UIButton) {
         
-        if !equationTF.text!.isEmpty {
+        if isValidEquation() {
             guard let svc = storyboard?.instantiateViewController(identifier: "solve") as? SolutionViewController else { return }
             svc.equation = equationTF.text!
             navigationController?.pushViewController(svc, animated: true)
-        } else {
-            let ac = UIAlertController(title: "Empty equation", message: "Type an equation", preferredStyle: .alert)
-            ac.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            present(ac, animated: true)
         }
         
     }
     
     @IBAction func numberTapped(_ sender: UIButton) {
         if runningNumber.count < 28 {
-            currentNumber += "\(sender.tag)"
             runningNumber += "\(sender.tag)"
             
             equationTF.text! = runningNumber

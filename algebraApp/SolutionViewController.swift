@@ -74,8 +74,8 @@ class SolutionViewController: UIViewController {
     func expand(_ expression: String) -> [String] {
         
         let expr = expression.split(separator: "(")
+        
         let multiplier = expr[0] == "-" || expr[0] == "+" ? Int(expr[0] + "1") : Int(expr[0])
-        print(multiplier!)
         var result = [String]()
         let exprInBracket = split(equation: getExprInBracket(String(expr[1])))
         for i in 0..<exprInBracket.count {
@@ -84,7 +84,6 @@ class SolutionViewController: UIViewController {
                 result.append(String(constant))
                 
             } else {
-                print(exprInBracket[i], "passed")
                 let newCoef = getCoefficient(variable: exprInBracket[i]) * multiplier!
                 result.append(String(newCoef) + variable)
             }
@@ -299,10 +298,6 @@ class SolutionViewController: UIViewController {
         return "+ " + variable
     }
     
-    //checks if what the user enters is a valid linear equation
-    func isValidEquation() -> Bool {
-        return true
-    }
     
     func displaySteps(labelText: String , equation: String) {
         let label = UILabel()
