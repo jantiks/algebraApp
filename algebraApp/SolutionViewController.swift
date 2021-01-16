@@ -33,7 +33,7 @@ class SolutionViewController: UIViewController {
         
         for i in 0..<(equation.count) {
             let char = String(equation[i])
-            if char == "+" || char == "-" && i != 0 && !isInsideBracket {
+            if (char == "+" || char == "-") && (i != 0) && (!isInsideBracket) {
                 splitedEquation.append(expression)
                 expression = char
             } else {
@@ -53,6 +53,7 @@ class SolutionViewController: UIViewController {
         var eqtComponents = [String]()
         for i in equationComponents {
             if containsBracket(expression: i) {
+                print(i , "this is bracket expr")
                 eqtComponents.append(contentsOf: expand(i))
             } else {
                 eqtComponents.append(i)
@@ -74,19 +75,20 @@ class SolutionViewController: UIViewController {
         
         let expr = expression.split(separator: "(")
         let multiplier = expr[0] == "-" || expr[0] == "+" ? Int(expr[0] + "1") : Int(expr[0])
+        print(multiplier!)
         var result = [String]()
         let exprInBracket = split(equation: getExprInBracket(String(expr[1])))
         for i in 0..<exprInBracket.count {
-            let elem = exprInBracket[i]
-//            if elem.contains(")") {
-//                elem.removeLast()
-//            }
-            if let constant: Int = (multiplier! * Int(elem)!) {
+            if let elem = Int(exprInBracket[i]) {
+                let constant: Int = (multiplier! * elem)
                 result.append(String(constant))
+                
             } else {
-                let newCoef = getCoefficient(variable: elem) * multiplier!
+                print(exprInBracket[i], "passed")
+                let newCoef = getCoefficient(variable: exprInBracket[i]) * multiplier!
                 result.append(String(newCoef) + variable)
             }
+            
         }
         
         return result
@@ -133,7 +135,6 @@ class SolutionViewController: UIViewController {
     func collectLikeTerms (leftHandSide: [String], rightHandSide: [String]) -> [[String]] {
         var variables = [String]()
         var constants = [String]()
-        print(leftHandSide, "this is left hand side")
         for i in 0..<leftHandSide.count {
             var elem = leftHandSide[i]
             if let digit = Int(elem) {
@@ -149,7 +150,6 @@ class SolutionViewController: UIViewController {
                 }
                 
             } else {
-                print(elem)
                 variables.append(elem)
             }
         
@@ -241,7 +241,6 @@ class SolutionViewController: UIViewController {
                         
                     }
                 }
-                print("this is coef \(coef)")
                 coefficient += Double(coef)
             } else {
                 coefficient += Double(getCoefficient(variable: i))
