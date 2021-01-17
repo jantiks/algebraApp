@@ -113,15 +113,25 @@ class SolutionViewController: UIViewController {
             return -1
         } else if variable.count == 2 && variable[0] == "+" {
             return 1
+        } else if variable.count == 3 && variable.contains("ˆ") {
+            return 1
+        } else if variable.count == 4 && variable.contains("ˆ") && variable.first == "-" {
+            return -1
+        } else if variable.count == 4 && variable.contains("ˆ") && variable.first == "+" {
+            return 1
         }
         
         for i in 0..<variable.count {
             if variable[i] == "." {
                 break
             }
+            if variable[i] == "ˆ" {
+                break
+            }
             if let coef = Int(String(variable[i])) {
                 coefficient += String(coef)
             }
+            
         }
         if variable[0] == "-" {
             return -Int(coefficient)!
@@ -250,6 +260,9 @@ class SolutionViewController: UIViewController {
                 var coef = ""
                 for j in 0..<comp.count {
                     if comp[j] == "x" {
+                        if j == 0 {
+                            coef = "1"
+                        }
                         break
                     }
                     coef += String(comp[j])
@@ -265,6 +278,29 @@ class SolutionViewController: UIViewController {
         }
         
         return String(coeficiant) + "xˆ2"
+    }
+    
+    func findSolutionOfQuadraticEqt(a: Double, b: Double, c: Double) -> [String] {
+        var result = [String]()
+        
+        let discriminant: Double = Double((b*b) - 4 * a * c)
+        
+        if discriminant > 0 {
+            let x1 = (-b + sqrt(discriminant)) / (2 * a)
+            let x2 = (-b - sqrt(discriminant)) / (2 * a)
+            result.append(String(x1))
+            result.append(String(x2))
+        } else if discriminant == 0 {
+            let x = (-b) / (2 * a)
+            result.append(String(x))
+        } else {
+            result.append("Nan")
+        }
+        
+        
+        
+        
+        return result
     }
     
     //simplifies variables
@@ -305,17 +341,12 @@ class SolutionViewController: UIViewController {
                         } else {
                             coef /= Double(variableCoef)
                         }
-                        
-                        
                     }
                 }
                 coefficient += Double(coef)
             } else {
                 coefficient += Double(getCoefficient(variable: i))
-            
             }
-            
-
         }
         
         if coefficient == 1 {
@@ -419,37 +450,48 @@ class SolutionViewController: UIViewController {
         
         if equation.contains(variable + "ˆ2") {
             let result = collectComponentsOfQuadraticEqt(leftHandSideArr, rightHandSideArr)
+            var showArr = result[0] + result[1] + result[2]
+            displaySteps(labelText: "Step 1: Your equation is quadratic, let's collect all variables and constats in left hand side", equation: getSolution(leftHandSide: showArr, rightHandSide: ["0"]))
             let quadrVars = result[0]
             let variables = result[1]
             let constants = result[2]
             
-            var quadrVarsSimpl = simplifyQuadrExpression(expression: quadrVars)
-            var variablesSimpl = simplifyExpression(expression: variables)
-            var constantsSimpl = simplifyConstants(constants: constants)
-
-            print(quadrVarsSimpl , variablesSimpl, constantsSimpl)
-//            let x1 = findSolutionOfQuadraticEqt()
-//            let x2 = findSolutionOfQuadraticEqt()
             
+            let quadrVarsSimpl = simplifyQuadrExpression(expression: quadrVars)
+            let variablesSimpl = simplifyExpression(expression: variables)
+            let constantsSimpl = simplifyConstants(constants: constants)
+            showArr = [quadrVarsSimpl + variablesSimpl + constantsSimpl]
+            displaySteps(labelText: "Step 2: lets's simplify equation", equation: getSolution(leftHandSide: showArr, rightHandSide: ["0"]))
+            print(getCoefficient(variable: quadrVarsSimpl))
+            let solutionArr = findSolutionOfQuadraticEqt(a: Double(getCoefficient(variable: quadrVarsSimpl)), b: Double(getCoefficient(variable: variablesSimpl)), c: Double(constantsSimpl)!)
+            if solutionArr.count == 2 {
+                let x1 = solutionArr[0]
+                let x2 = solutionArr[1]
+                print(x1 , x2)
+            } else if solutionArr[0] == "Nan" {
+                
+            } else {
+                let x = solutionArr[0]
+            }
             
         } else {
             //collectting constants and variables
             let result = collectLikeTerms(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr)
             leftHandSideArr = result[0]
             rightHandSideArr = result[1]
-            displaySteps(labelText: "step1: lets connect like varibales in leftHandSIde and constants in the other", equation: getSolution(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr))
+            displaySteps(labelText: "step 1: lets connect like varibales in leftHandSIde and constants in the other", equation: getSolution(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr))
             
             
             //simplifing left and right sides
             let leftSolution = simplifyExpression(expression: leftHandSideArr)
             let rightSolution = simplifyConstants(constants: rightHandSideArr)
-            displaySteps(labelText: "step2: lets simplify the expression", equation: getSolution(leftHandSide: [leftSolution], rightHandSide: [rightSolution]))
+            displaySteps(labelText: "step 2: lets simplify the expression", equation: getSolution(leftHandSide: [leftSolution], rightHandSide: [rightSolution]))
             
             //finding variable
             let coef = getCoefficient(variable: leftSolution)
             if coef != 1 {
                 let rightSol = (Float(rightSolution)!)/Float(coef)
-                displaySteps(labelText: "step3: divide both parts by \(coef)", equation: variable + " = " + String(rightSol))
+                displaySteps(labelText: "step 3: divide both parts by \(coef)", equation: variable + " = " + String(rightSol))
             }
         }
         
