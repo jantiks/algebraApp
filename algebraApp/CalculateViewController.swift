@@ -112,15 +112,6 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
         }
     }
     
-    @objc func count() {
-        if timeRemaining > 0 {
-            print("passed this")
-            timeRemaining -= 1
-        } else {
-            timer.invalidate()
-            timeRemaining = 3
-        }
-    }
     
     @IBAction func calculateTapped(_ sender: UIButton) {
         

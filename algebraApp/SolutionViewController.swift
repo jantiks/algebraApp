@@ -53,7 +53,6 @@ class SolutionViewController: UIViewController {
         var eqtComponents = [String]()
         for i in equationComponents {
             if containsBracket(expression: i) {
-                print(i , "this is bracket expr")
                 eqtComponents.append(contentsOf: expand(i))
             } else {
                 eqtComponents.append(i)
@@ -129,6 +128,53 @@ class SolutionViewController: UIViewController {
         }
         return Int(coefficient)!
     }
+    // collects quadratic eqt components in same array
+    func collectComponentsOfQuadraticEqt(_ leftHandSide: [String], _ rightHandSide: [String]) -> [[String]] {
+        var quadr = [String]()
+        var variables = [String]()
+        var constants = [String]()
+        
+        for i in 0..<leftHandSide.count {
+            let elem = leftHandSide[i]
+            if let digit = Int(elem) {
+                constants.append(String(digit))
+            } else if (elem.contains("*") || elem.contains("/")) && !elem.contains("x") {
+                constants.append(String(elem))
+            } else if elem.contains("xˆ2") {
+                quadr.append(elem)
+            } else {
+                variables.append(elem)
+            }
+        }
+        
+        for j in 0..<rightHandSide.count {
+            var elem = rightHandSide[j]
+            if let digit = Int(elem) {
+                let const = -1 * digit
+                constants.append(String(const))
+            } else if (elem.contains("*") || elem.contains("/")) && !elem.contains("x") {
+                if elem[0] == "+" {
+                    elem.removeFirst()
+                    constants.append(String("-" + elem))
+                } else if elem[0] == "-" {
+                    elem.removeFirst()
+                    constants.append(String("+" + elem))
+                }
+            } else if elem.contains("xˆ2") {
+                quadr.append(changeVariableSign(variable: elem))
+            } else {
+                variables.append(changeVariableSign(variable: elem))
+            }
+        }
+        
+        var result = [[""],[""],[""]]
+        result[0] = quadr
+        result[1] = variables
+        result[2] = constants
+        
+        return result
+
+    }
     
     //collects like terms in same array
     func collectLikeTerms (leftHandSide: [String], rightHandSide: [String]) -> [[String]] {
@@ -196,11 +242,34 @@ class SolutionViewController: UIViewController {
         return leftHandSolution + " = " + rightHandSolution
         
     }
+    func simplifyQuadrExpression(expression: [String]) -> String {
+        var coeficiant = 0
+        for i in 0..<expression.count {
+            let comp = expression[i]
+            if comp.contains("xˆ2") && (!comp.contains("*") || !(comp.contains("/"))) {
+                var coef = ""
+                for j in 0..<comp.count {
+                    if comp[j] == "x" {
+                        break
+                    }
+                    coef += String(comp[j])
+                }
+                coeficiant += Int(coef)!
+                
+            }
+        }
+        if coeficiant == 1 {
+            return "xˆ2"
+        } else if coeficiant == -1 {
+            return "-xˆ2"
+        }
+        
+        return String(coeficiant) + "xˆ2"
+    }
     
     //simplifies variables
     func simplifyExpression(expression: [String]) -> String {
         var coefficient: Double = 0
-        print(expression)
 
         for i in expression {
             if i.contains("*") {
@@ -330,8 +399,7 @@ class SolutionViewController: UIViewController {
     }
     
     func solve(equation: String) {
-        //shows equation
-        print("this is your equation \(equation)")
+        
         let leftHandSide = String(equation.split(separator: "=")[0])
         let rightHandSide = String(equation.split(separator: "=")[1])
         
@@ -349,26 +417,42 @@ class SolutionViewController: UIViewController {
         }
         
         
-        //collectting constants and variables
-        let result = collectLikeTerms(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr)
-        leftHandSideArr = result[0]
-        rightHandSideArr = result[1]
-        print("step1: lets collect like varibales in leftHandSIde and constants in the other")
-        displaySteps(labelText: "step1: lets connect like varibales in leftHandSIde and constants in the other", equation: getSolution(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr))
-        
-        
-        //simplifing left and right sides
-        let leftSolution = simplifyExpression(expression: leftHandSideArr)
-        let rightSolution = simplifyConstants(constants: rightHandSideArr)
-        print("step2: lets simplify the expression")
-        displaySteps(labelText: "step2: lets simplify the expression", equation: getSolution(leftHandSide: [leftSolution], rightHandSide: [rightSolution]))
-        
-        //finding variable
-        let coef = getCoefficient(variable: leftSolution)
-        if coef != 1 {
-            let rightSol = (Float(rightSolution)!)/Float(coef)
-            displaySteps(labelText: "step3: divide both parts by \(coef)", equation: variable + " = " + String(rightSol))
+        if equation.contains(variable + "ˆ2") {
+            let result = collectComponentsOfQuadraticEqt(leftHandSideArr, rightHandSideArr)
+            let quadrVars = result[0]
+            let variables = result[1]
+            let constants = result[2]
+            
+            var quadrVarsSimpl = simplifyQuadrExpression(expression: quadrVars)
+            var variablesSimpl = simplifyExpression(expression: variables)
+            var constantsSimpl = simplifyConstants(constants: constants)
+
+            print(quadrVarsSimpl , variablesSimpl, constantsSimpl)
+//            let x1 = findSolutionOfQuadraticEqt()
+//            let x2 = findSolutionOfQuadraticEqt()
+            
+            
+        } else {
+            //collectting constants and variables
+            let result = collectLikeTerms(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr)
+            leftHandSideArr = result[0]
+            rightHandSideArr = result[1]
+            displaySteps(labelText: "step1: lets connect like varibales in leftHandSIde and constants in the other", equation: getSolution(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr))
+            
+            
+            //simplifing left and right sides
+            let leftSolution = simplifyExpression(expression: leftHandSideArr)
+            let rightSolution = simplifyConstants(constants: rightHandSideArr)
+            displaySteps(labelText: "step2: lets simplify the expression", equation: getSolution(leftHandSide: [leftSolution], rightHandSide: [rightSolution]))
+            
+            //finding variable
+            let coef = getCoefficient(variable: leftSolution)
+            if coef != 1 {
+                let rightSol = (Float(rightSolution)!)/Float(coef)
+                displaySteps(labelText: "step3: divide both parts by \(coef)", equation: variable + " = " + String(rightSol))
+            }
         }
+        
         
     }
     
