@@ -449,29 +449,41 @@ class SolutionViewController: UIViewController {
         
         
         if equation.contains(variable + "ˆ2") {
+            // collects all components in left hand side
             let result = collectComponentsOfQuadraticEqt(leftHandSideArr, rightHandSideArr)
             var showArr = result[0] + result[1] + result[2]
+            print(showArr)
             displaySteps(labelText: "Step 1: Your equation is quadratic, let's collect all variables and constats in left hand side", equation: getSolution(leftHandSide: showArr, rightHandSide: ["0"]))
             let quadrVars = result[0]
             let variables = result[1]
             let constants = result[2]
             
-            
+            // simplifies expression
             let quadrVarsSimpl = simplifyQuadrExpression(expression: quadrVars)
-            let variablesSimpl = simplifyExpression(expression: variables)
-            let constantsSimpl = simplifyConstants(constants: constants)
-            showArr = [quadrVarsSimpl + variablesSimpl + constantsSimpl]
-            displaySteps(labelText: "Step 2: lets's simplify equation", equation: getSolution(leftHandSide: showArr, rightHandSide: ["0"]))
-            print(getCoefficient(variable: quadrVarsSimpl))
+            var variablesSimpl = simplifyExpression(expression: variables)
+            var constantsSimpl = simplifyConstants(constants: constants)
+            
+//            if let _ = Int(String(variablesSimpl[0])) {
+//                variablesSimpl += "+"
+//            }
+//            if let _ = Int(String(constantsSimpl[0])) {
+//                constantsSimpl += "+"
+//            }
+            showArr = [quadrVarsSimpl,variablesSimpl, constantsSimpl]
+            print(showArr)
+            displaySteps(labelText: "Step 2: simplify equation", equation: getSolution(leftHandSide: showArr, rightHandSide: ["0"]))
+            
+            //findes roots
             let solutionArr = findSolutionOfQuadraticEqt(a: Double(getCoefficient(variable: quadrVarsSimpl)), b: Double(getCoefficient(variable: variablesSimpl)), c: Double(constantsSimpl)!)
             if solutionArr.count == 2 {
                 let x1 = solutionArr[0]
                 let x2 = solutionArr[1]
-                print(x1 , x2)
+                displaySteps(labelText: "Step 3: calculate roots", equation: "x1 = \(x1) , x2 = \(x2)")
             } else if solutionArr[0] == "Nan" {
-                
+                displaySteps(labelText: "Equation discriminant is less than 0", equation: "")
             } else {
                 let x = solutionArr[0]
+                displaySteps(labelText: "Step 3: calculate root", equation: "x = \(x)")
             }
             
         } else {
