@@ -76,18 +76,23 @@ class SolutionViewController: UIViewController {
         
         let multiplier = expr[0] == "-" || expr[0] == "+" ? Int(expr[0] + "1") : Int(expr[0])
         var result = [String]()
-        let exprInBracket = split(equation: getExprInBracket(String(expr[1])))
-        for i in 0..<exprInBracket.count {
-            if let elem = Int(exprInBracket[i]) {
-                let constant: Int = (multiplier! * elem)
-                result.append(String(constant))
-                
-            } else {
-                let newCoef = getCoefficient(variable: exprInBracket[i]) * multiplier!
-                result.append(String(newCoef) + variable)
+        if expr.count == 2 {
+            let exprInBracket = split(equation: getExprInBracket(String(expr[1])))
+            for i in 0..<exprInBracket.count {
+                if let elem = Int(exprInBracket[i]) {
+                    let constant: Int = (multiplier! * elem)
+                    result.append(String(constant))
+                    
+                } else {
+                    let newCoef = getCoefficient(variable: exprInBracket[i]) * multiplier!
+                    result.append(String(newCoef) + variable)
+                }
+
             }
-            
+        } else {
+            displaySteps(labelText: "Error with brackets , check if you puted them correctly", equation: "")
         }
+        
         
         return result
     }
@@ -213,8 +218,12 @@ class SolutionViewController: UIViewController {
         for j in 0..<rightHandSide.count {
             let elem = rightHandSide[j]
             if let digit = Int(elem) {
-                let const = Int(digit)
-                constants.append(String(const))
+                if digit == 0 {
+                    continue
+                } else {
+                    constants.append(String(digit))
+                }
+                
             } else if (elem.contains("*") || elem.contains("/")) && !elem.contains("x") {
                 constants.append(String(elem))
             } else {
@@ -426,7 +435,7 @@ class SolutionViewController: UIViewController {
              label.leadingAnchor.constraint(equalTo: scrollContent.leadingAnchor),
             equationLabel.topAnchor.constraint(equalTo: label.layoutMarginsGuide.bottomAnchor, constant: 10)])
         
-        contentViewHeight += label.frame.size.height
+        contentViewHeight += label.frame.size.height + equationLabel.frame.size.height
     }
     
     func solve(equation: String) {
@@ -452,7 +461,6 @@ class SolutionViewController: UIViewController {
             // collects all components in left hand side
             let result = collectComponentsOfQuadraticEqt(leftHandSideArr, rightHandSideArr)
             var showArr = result[0] + result[1] + result[2]
-            print(showArr)
             displaySteps(labelText: "Step 1: Your equation is quadratic, let's collect all variables and constats in left hand side", equation: getSolution(leftHandSide: showArr, rightHandSide: ["0"]))
             let quadrVars = result[0]
             let variables = result[1]
@@ -460,17 +468,10 @@ class SolutionViewController: UIViewController {
             
             // simplifies expression
             let quadrVarsSimpl = simplifyQuadrExpression(expression: quadrVars)
-            var variablesSimpl = simplifyExpression(expression: variables)
-            var constantsSimpl = simplifyConstants(constants: constants)
+            let variablesSimpl = simplifyExpression(expression: variables)
+            let constantsSimpl = simplifyConstants(constants: constants)
             
-//            if let _ = Int(String(variablesSimpl[0])) {
-//                variablesSimpl += "+"
-//            }
-//            if let _ = Int(String(constantsSimpl[0])) {
-//                constantsSimpl += "+"
-//            }
             showArr = [quadrVarsSimpl,variablesSimpl, constantsSimpl]
-            print(showArr)
             displaySteps(labelText: "Step 2: simplify equation", equation: getSolution(leftHandSide: showArr, rightHandSide: ["0"]))
             
             //findes roots

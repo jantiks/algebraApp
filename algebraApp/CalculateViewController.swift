@@ -10,8 +10,13 @@ import UIKit
 
 
 class CalculateViewController: UIViewController, UINavigationControllerDelegate {
+    
+    @IBOutlet weak var quadrEqA: UITextField!
+    @IBOutlet weak var quadrEqB: UITextField!
+    @IBOutlet weak var quadrEqC: UITextField!
+    @IBOutlet weak var quadrEqRightSide: UITextField!
+    
     @IBOutlet weak var equationView: UIView!
-    @IBOutlet weak var equationTF: UITextField!
     @IBOutlet weak var calculateButton: UIButton!
     @IBOutlet weak var warnLabel: UILabel!
     
@@ -39,30 +44,30 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
         if runningNumber.count < 27 {
             guard let text = button.titleLabel?.text else { return }
             runningNumber += text
-            equationTF.text! = runningNumber
+//            equationTF.text! = runningNumber
         }
     }
 
     //checks if what the user enters is a valid linear equation
-    func isValidEquation() -> Bool {
-        guard let text = equationTF.text else { return false }
-        if !isNotEmpty(text) {
-            return false
-        } else {
-            if !hasEqualSign(text) {
-                return false
-            }
-        }
-        if !hasVariable(text) {
-            return false
-        }
-        
-        if !bracketsAreClosed(text) {
-            return false
-        }
-        
-        return true
-    }
+//    func isValidEquation() -> Bool {
+////        guard let text = equationTF.text else { return false }
+//        if !isNotEmpty(text) {
+//            return false
+//        } else {
+//            if !hasEqualSign(text) {
+//                return false
+//            }
+//        }
+//        if !hasVariable(text) {
+//            return false
+//        }
+//
+//        if !bracketsAreClosed(text) {
+//            return false
+//        }
+//
+//        return true
+//    }
     // checks if equation has variable
     func hasVariable(_ equation: String) -> Bool {
         if equation.contains(variable) {
@@ -85,6 +90,7 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
         return true
     }
     
+    //  cheks if equation has equal sign
     func hasEqualSign(_ equation: String) -> Bool {
         if equation.count > 2 {
             for i in 1..<(equation.count - 1) {
@@ -115,11 +121,11 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
     
     @IBAction func calculateTapped(_ sender: UIButton) {
         
-        if isValidEquation() {
-            guard let svc = storyboard?.instantiateViewController(identifier: "solve") as? SolutionViewController else { return }
-            svc.equation = equationTF.text!
-            navigationController?.pushViewController(svc, animated: true)
-        }
+//        if isValidEquation() {
+//            guard let svc = storyboard?.instantiateViewController(identifier: "solve") as? SolutionViewController else { return }
+////            svc.equation = equationTF.text!
+//            navigationController?.pushViewController(svc, animated: true)
+//        }
         
     }
     
@@ -127,7 +133,7 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
         if runningNumber.count < 28 {
             runningNumber += "\(sender.tag)"
             
-            equationTF.text! = runningNumber
+//            equationTF.text! = runningNumber
             
             
         }
@@ -158,7 +164,7 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
             if char == "=" {
                 equalIsTapped = false
             }
-            equationTF.text! = runningNumber
+//            equationTF.text! = runningNumber
         }
     }
     
