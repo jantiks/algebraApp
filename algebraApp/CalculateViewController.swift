@@ -9,7 +9,7 @@
 import UIKit
 
 
-class CalculateViewController: UIViewController, UINavigationControllerDelegate {
+class CalculateViewController: UIViewController, UINavigationControllerDelegate, UITextFieldDelegate {
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     
     @IBOutlet weak var quadrEqtView: UIView!
@@ -28,6 +28,9 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
     @IBOutlet weak var calculateButton: UIButton!
     @IBOutlet weak var warnLabel: UILabel!
     
+    var linearTfArr = [UITextField]()
+    var quadrTfArr = [UITextField]()
+    
     let variable = "x"
     var runningNumber = ""
     
@@ -39,8 +42,23 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
     var timer = Timer()
     override func viewDidLoad() {
         super.viewDidLoad()
-        quadrEqtView.isHidden = true
         
+        linearTfArr = [linearEqA, linearEqB, linearEqRightSide]
+        quadrTfArr = [quadrEqA, quadrEqB, quadrEqC, quadrEqRightSide]
+        
+        quadrEqA.delegate = self
+        quadrEqtView.isHidden = true
+        // preventing to show up keyword
+        quadrEqA.inputView = UIView()
+        quadrEqB.inputView = UIView()
+        quadrEqC.inputView = UIView()
+        quadrEqRightSide.inputView = UIView()
+        
+        linearEqA.inputView = UIView()
+        linearEqB.inputView = UIView()
+        linearEqRightSide.inputView = UIView()
+        linearEqA.becomeFirstResponder()
+
         equationView.layer.borderWidth = 2
         equationView.layer.borderColor = UIColor.darkGray.cgColor
         calculateButton.layer.cornerRadius = 4
@@ -49,34 +67,7 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
         
     }
     
-    func buttonIsTapped(button: UIButton) {
-        if runningNumber.count < 27 {
-            guard let text = button.titleLabel?.text else { return }
-            runningNumber += text
-//            equationTF.text! = runningNumber
-        }
-    }
-
-    //checks if what the user enters is a valid linear equation
-//    func isValidEquation() -> Bool {
-////        guard let text = equationTF.text else { return false }
-//        if !isNotEmpty(text) {
-//            return false
-//        } else {
-//            if !hasEqualSign(text) {
-//                return false
-//            }
-//        }
-//        if !hasVariable(text) {
-//            return false
-//        }
-//
-//        if !bracketsAreClosed(text) {
-//            return false
-//        }
-//
-//        return true
-//    }
+    
     // checks if equation has variable
     func hasVariable(_ equation: String) -> Bool {
         if equation.contains(variable) {
@@ -127,92 +118,102 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
         }
     }
     
+    private func addNumber(_ button: UIButton) {
+        if segmentedControl.selectedSegmentIndex == 0 {
+            for textField in linearTfArr {
+                if textField.isFirstResponder {
+                    if let _ = textField.text {
+                        textField.text! += (button.titleLabel?.text)!
+                    } else {
+                        textField.text = button.titleLabel?.text
+                    }
+                    
+                }
+            }
+        } else {
+            for textField in quadrTfArr {
+                if textField.isFirstResponder {
+                    if let _ = textField.text {
+                        textField.text! += (button.titleLabel?.text)!
+                    } else {
+                        textField.text = button.titleLabel?.text
+                    }
+                    
+                }
+            }
+        }
+    }
+    
+    private func changeTextField() {
+        if segmentedControl.selectedSegmentIndex == 0 {
+            for i in 0..<linearTfArr.count - 1 {
+                if linearTfArr[i].isFirstResponder {
+                    linearTfArr[i+1].becomeFirstResponder()
+                    break
+                }
+            }
+        } else {
+            for i in 0..<quadrTfArr.count - 1 {
+                if quadrTfArr[i].isFirstResponder {
+                    quadrTfArr[i+1].becomeFirstResponder()
+                    break
+                }
+            }
+        }
+        
+        
+    }
+    
     @IBAction func didChangeSegment(_ sender: UISegmentedControl) {
         if sender.selectedSegmentIndex == 0 {
             linearEqtView.isHidden = false
+            linearEqA.becomeFirstResponder()
             quadrEqtView.isHidden = true
         } else {
             linearEqtView.isHidden = true
+            quadrEqA.becomeFirstResponder()
             quadrEqtView.isHidden = false
+        }
+    }
+    @IBAction func deleteTapped(_ sender: UIButton) {
+        if segmentedControl.selectedSegmentIndex == 0 {
+            for textField in linearTfArr {
+                if textField.isFirstResponder {
+                    if let text = textField.text {
+                        let endIndex = text.startIndex
+                        textField.text?.remove(at: endIndex)
+                    }
+                    
+                }
+            }
+        } else {
+            for textField in quadrTfArr {
+                if textField.isFirstResponder {
+                    if let _ = textField.text {
+                        let endIndex = textField.text?.endIndex
+                        textField.text?.remove(at: endIndex!)
+                    }
+                }
+            }
         }
     }
     
     @IBAction func calculateTapped(_ sender: UIButton) {
         
-//        if isValidEquation() {
-//            guard let svc = storyboard?.instantiateViewController(identifier: "solve") as? SolutionViewController else { return }
-////            svc.equation = equationTF.text!
-//            navigationController?.pushViewController(svc, animated: true)
-//        }
+        guard let svc = storyboard?.instantiateViewController(identifier: "solve") as? SolutionViewController else { return }
+        svc.equation = "\(linearEqA.text!)x+\(linearEqB.text!)=\(linearEqRightSide.text!)"
+        navigationController?.pushViewController(svc, animated: true)
         
     }
     
     @IBAction func numberTapped(_ sender: UIButton) {
-        if runningNumber.count < 28 {
-            runningNumber += "\(sender.tag)"
-            
-//            equationTF.text! = runningNumber
-            
-            
-        }
-        
+        addNumber(sender)
     }
     
-    @IBAction func openBracketTapped(_ sender: UIButton) {
-        buttonIsTapped(button: sender)
-    }
-    @IBAction func closeBracketTapped(_ sender: UIButton) {
-        buttonIsTapped(button: sender)
-    }
-    @IBAction func powerTapped(_ sender: UIButton) {
-        buttonIsTapped(button: sender)
-    }
-    @IBAction func squareRootTapped(_ sender: UIButton) {
-        buttonIsTapped(button: sender)
-    }
-    @IBAction func xTapped(_ sender: UIButton) {
-        buttonIsTapped(button: sender)
-    }
-    @IBAction func dotTapped(_ sender: UIButton) {
-        buttonIsTapped(button: sender)
-    }
-    @IBAction func delTapped(_ sender: UIButton) {
-        if runningNumber.count > 0 {
-            let char = runningNumber.removeLast()
-            if char == "=" {
-                equalIsTapped = false
-            }
-//            equationTF.text! = runningNumber
-        }
+    @IBAction func nextTapped(_ sender: UIButton) {
+        changeTextField()
     }
     
-    @IBAction func equalTapped(_ sender: UIButton) {
-        if !equalIsTapped {
-            buttonIsTapped(button: sender)
-            equalIsTapped = true
-        }
-    }
-    @IBAction func divideTapped(_ sender: UIButton) {
-        buttonIsTapped(button: sender)
-    }
-    @IBAction func multiplyTapped(_ sender: UIButton) {
-        buttonIsTapped(button: sender)
-
-    }
-    @IBAction func subtractTapped(_ sender: UIButton) {
-        buttonIsTapped(button: sender)
-        subtractIsTapped = true
-
-
-    }
-    @IBAction func addTapped(_ sender: UIButton) {
-        buttonIsTapped(button: sender)
-
-        
-    }
-    
-    
-
 }
 
 extension String {

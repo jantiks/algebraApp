@@ -84,6 +84,7 @@ class SolutionViewController: UIViewController {
                     result.append(String(constant))
                     
                 } else {
+                    print(equation)
                     let newCoef = getCoefficient(variable: exprInBracket[i]) * multiplier!
                     result.append(String(newCoef) + variable)
                 }
