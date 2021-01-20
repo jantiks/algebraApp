@@ -10,11 +10,19 @@ import UIKit
 
 
 class CalculateViewController: UIViewController, UINavigationControllerDelegate {
+    @IBOutlet weak var segmentedControl: UISegmentedControl!
     
+    @IBOutlet weak var quadrEqtView: UIView!
     @IBOutlet weak var quadrEqA: UITextField!
     @IBOutlet weak var quadrEqB: UITextField!
     @IBOutlet weak var quadrEqC: UITextField!
     @IBOutlet weak var quadrEqRightSide: UITextField!
+    
+    @IBOutlet weak var linearEqtView: UIView!
+    @IBOutlet weak var linearEqA: UITextField!
+    @IBOutlet weak var linearEqB: UITextField!
+    @IBOutlet weak var linearEqRightSide: UITextField!
+    
     
     @IBOutlet weak var equationView: UIView!
     @IBOutlet weak var calculateButton: UIButton!
@@ -31,6 +39,7 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
     var timer = Timer()
     override func viewDidLoad() {
         super.viewDidLoad()
+        quadrEqtView.isHidden = true
         
         equationView.layer.borderWidth = 2
         equationView.layer.borderColor = UIColor.darkGray.cgColor
@@ -118,6 +127,15 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate 
         }
     }
     
+    @IBAction func didChangeSegment(_ sender: UISegmentedControl) {
+        if sender.selectedSegmentIndex == 0 {
+            linearEqtView.isHidden = false
+            quadrEqtView.isHidden = true
+        } else {
+            linearEqtView.isHidden = true
+            quadrEqtView.isHidden = false
+        }
+    }
     
     @IBAction func calculateTapped(_ sender: UIButton) {
         
