@@ -10,23 +10,23 @@ import UIKit
 
 
 class CalculateViewController: UIViewController, UINavigationControllerDelegate, UITextFieldDelegate {
-    @IBOutlet weak var segmentedControl: UISegmentedControl!
+    @IBOutlet private weak var segmentedControl: UISegmentedControl!
     
-    @IBOutlet weak var quadrEqtView: UIView!
-    @IBOutlet weak var quadrEqA: UITextField!
-    @IBOutlet weak var quadrEqB: UITextField!
-    @IBOutlet weak var quadrEqC: UITextField!
-    @IBOutlet weak var quadrEqRightSide: UITextField!
+    @IBOutlet private weak var quadrEqtView: UIView!
+    @IBOutlet private weak var quadrEqA: UITextField!
+    @IBOutlet private weak var quadrEqB: UITextField!
+    @IBOutlet private weak var quadrEqC: UITextField!
+    @IBOutlet private weak var quadrEqRightSide: UITextField!
     
-    @IBOutlet weak var linearEqtView: UIView!
-    @IBOutlet weak var linearEqA: UITextField!
-    @IBOutlet weak var linearEqB: UITextField!
-    @IBOutlet weak var linearEqRightSide: UITextField!
+    @IBOutlet private weak var linearEqtView: UIView!
+    @IBOutlet private weak var linearEqA: UITextField!
+    @IBOutlet private weak var linearEqB: UITextField!
+    @IBOutlet private weak var linearEqRightSide: UITextField!
     
     
-    @IBOutlet weak var equationView: UIView!
-    @IBOutlet weak var calculateButton: UIButton!
-    @IBOutlet weak var warnLabel: UILabel!
+    @IBOutlet private weak var equationView: UIView!
+    @IBOutlet private weak var calculateButton: UIButton!
+    @IBOutlet private weak var warnLabel: UILabel!
     
     var linearTfArr = [UITextField]()
     var quadrTfArr = [UITextField]()
@@ -164,7 +164,7 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate,
         
     }
     
-    @IBAction func didChangeSegment(_ sender: UISegmentedControl) {
+    @IBAction private func didChangeSegment(_ sender: UISegmentedControl) {
         if sender.selectedSegmentIndex == 0 {
             linearEqtView.isHidden = false
             linearEqA.becomeFirstResponder()
@@ -175,7 +175,7 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate,
             quadrEqtView.isHidden = false
         }
     }
-    @IBAction func deleteTapped(_ sender: UIButton) {
+    @IBAction private func deleteTapped(_ sender: UIButton) {
         if segmentedControl.selectedSegmentIndex == 0 {
             for textField in linearTfArr {
                 if textField.isFirstResponder {
@@ -198,19 +198,25 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate,
         }
     }
     
-    @IBAction func calculateTapped(_ sender: UIButton) {
+    @IBAction private func calculateTapped(_ sender: UIButton) {
         
         guard let svc = storyboard?.instantiateViewController(identifier: "solve") as? SolutionViewController else { return }
-        svc.equation = "\(linearEqA.text!)x+\(linearEqB.text!)=\(linearEqRightSide.text!)"
+        
+        if segmentedControl.selectedSegmentIndex == 0 {
+            svc.equation = "\(linearEqA.text!)x+\(linearEqB.text!)=\(linearEqRightSide.text!)"
+        } else {
+            svc.equation = "\(quadrEqA.text!)xˆ2+\(quadrEqB.text!)x+\(quadrEqC.text!)=\(quadrEqRightSide.text!)"
+        }
+        
         navigationController?.pushViewController(svc, animated: true)
         
     }
     
-    @IBAction func numberTapped(_ sender: UIButton) {
+    @IBAction private func numberTapped(_ sender: UIButton) {
         addNumber(sender)
     }
     
-    @IBAction func nextTapped(_ sender: UIButton) {
+    @IBAction private func nextTapped(_ sender: UIButton) {
         changeTextField()
     }
     
