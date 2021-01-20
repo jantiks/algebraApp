@@ -179,23 +179,24 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate,
         if segmentedControl.selectedSegmentIndex == 0 {
             for textField in linearTfArr {
                 if textField.isFirstResponder {
-                    if let text = textField.text {
-                        let endIndex = text.startIndex
-                        textField.text?.remove(at: endIndex)
+                    if !textField.text!.isEmpty {
+                        textField.text?.removeLast()
                     }
-                    
                 }
             }
         } else {
             for textField in quadrTfArr {
                 if textField.isFirstResponder {
-                    if let _ = textField.text {
-                        let endIndex = textField.text?.endIndex
-                        textField.text?.remove(at: endIndex!)
+                    if !textField.text!.isEmpty {
+                        textField.text?.removeLast()
                     }
                 }
             }
         }
+    }
+    
+    @IBAction private func minusTapped(_ sender: UIButton) {
+        addNumber(sender)
     }
     
     @IBAction private func calculateTapped(_ sender: UIButton) {
