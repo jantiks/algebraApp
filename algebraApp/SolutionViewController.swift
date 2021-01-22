@@ -231,6 +231,13 @@ class SolutionViewController: UIViewController {
                 variables.append(changeVariableSign(variable: elem))
             }
         }
+        for i in 0..<variables.count {
+            if variables[i] == "+" {
+                variables.remove(at: i)
+            }
+            
+        }
+        
         var result = [[""],[""]]
         result[0] = variables
         result[1] = constants
@@ -447,7 +454,7 @@ class SolutionViewController: UIViewController {
         //spliting two sides of equation
         var leftHandSideArr = split(equation: leftHandSide)
         var rightHandSideArr = split(equation: rightHandSide)
-        
+        print(leftHandSide)
         if containsBracket(expression: equation) {
             if containsBracket(expression: leftHandSide)  {
                 leftHandSideArr = openBracket(equationComponents: leftHandSideArr)
@@ -494,7 +501,6 @@ class SolutionViewController: UIViewController {
             leftHandSideArr = result[0]
             rightHandSideArr = result[1]
             displaySteps(labelText: "step 1: lets connect like varibales in leftHandSIde and constants in the other", equation: getSolution(leftHandSide: leftHandSideArr, rightHandSide: rightHandSideArr))
-            
             
             //simplifing left and right sides
             let leftSolution = simplifyExpression(expression: leftHandSideArr)
