@@ -66,7 +66,10 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate,
         
         
     }
-    
+    // checks if equation is valid
+    func isValid(_ equation: String) -> Bool {
+        return isNotEmpty(equation)
+    }
     
     // checks if equation has variable
     func hasVariable(_ equation: String) -> Bool {
@@ -202,10 +205,11 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate,
     @IBAction private func calculateTapped(_ sender: UIButton) {
         
         guard let svc = storyboard?.instantiateViewController(identifier: "solve") as? SolutionViewController else { return }
-        
         if segmentedControl.selectedSegmentIndex == 0 {
+            if !isValid(linearEqRightSide.text!) { return }
             svc.equation = "\(linearEqA.text!)x+\(linearEqB.text!)=\(linearEqRightSide.text!)"
         } else {
+            if !isValid(quadrEqRightSide.text!) { return }
             svc.equation = "\(quadrEqA.text!)xˆ2+\(quadrEqB.text!)x+\(quadrEqC.text!)=\(quadrEqRightSide.text!)"
         }
         

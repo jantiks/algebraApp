@@ -158,6 +158,8 @@ class SolutionViewController: UIViewController {
                 constants.append(String(elem))
             } else if elem.contains("xˆ2") {
                 quadr.append(elem)
+            } else if elem == "+" {
+                continue
             } else {
                 variables.append(elem)
             }
@@ -183,10 +185,12 @@ class SolutionViewController: UIViewController {
             }
         }
         
+        
         var result = [[""],[""],[""]]
         result[0] = quadr
         result[1] = variables
         result[2] = constants
+        print(result)
         
         return result
 
