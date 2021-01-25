@@ -31,12 +31,7 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate,
     var linearTfArr = [UITextField]()
     var quadrTfArr = [UITextField]()
     
-    let variable = "x"
-    var runningNumber = ""
     
-    var result = ""
-    var equalIsTapped = false
-    var subtractIsTapped = false
     
     var timeRemaining = 3
     var timer = Timer()
@@ -67,54 +62,27 @@ class CalculateViewController: UIViewController, UINavigationControllerDelegate,
         
     }
     // checks if equation is valid
-    func isValid(_ equation: String) -> Bool {
+    private func isValid(_ equation: String) -> Bool {
         return isNotEmpty(equation)
     }
     
-    // checks if equation has variable
-    func hasVariable(_ equation: String) -> Bool {
-        if equation.contains(variable) {
-            return true
-        }
-        showWarnLabel("Your equation doesn't have variable")
-        return false
-    }
     
     //checks if equation is empty
-    func isNotEmpty(_ equation: String) -> Bool {
+    private func isNotEmpty(_ equation: String) -> Bool {
         if !equation.isEmpty {
             return true
         }
         showWarnLabel("Your equation is empty")
         return false
     }
-    // checks if brackets are closed
-    func bracketsAreClosed(_ equation: String) -> Bool {
-        return true
-    }
-    
-    //  cheks if equation has equal sign
-    func hasEqualSign(_ equation: String) -> Bool {
-        if equation.count > 2 {
-            for i in 1..<(equation.count - 1) {
-                if equation[i] == "=" {
-                    return true
-                }
-            }
-        }
-        
-        showWarnLabel("Your equation doesn't have '=' sign")
-        return false
-        
-    }
-    
-    func showWarnLabel(_ text: String) {
+    //shows the warn label
+    private func showWarnLabel(_ text: String) {
         warnLabel.isHidden = false
         warnLabel.text = text
         hideWarnLabel()
     }
     
-    func hideWarnLabel() {
+    private func hideWarnLabel() {
         _ = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) {
             [weak self] timer in
             self?.warnLabel.isHidden = true

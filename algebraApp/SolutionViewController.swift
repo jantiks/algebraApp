@@ -21,12 +21,12 @@ class SolutionViewController: UIViewController {
         solve(equation: equation)
     }
     
-    func containsBracket(expression: String) -> Bool {
+    private func containsBracket(expression: String) -> Bool {
         return expression.contains("(")
     }
     
     // splits equation into components
-    func split(equation: String) -> [String] {
+    private func split(equation: String) -> [String] {
         var expression = ""
         var splitedEquation = [String]()
         var isInsideBracket = false
@@ -49,7 +49,7 @@ class SolutionViewController: UIViewController {
         return splitedEquation
     }
     //removes and evaluates components with bracket.
-    func openBracket(equationComponents: [String]) -> [String]{
+    private func openBracket(equationComponents: [String]) -> [String]{
         var eqtComponents = [String]()
         for i in equationComponents {
             if containsBracket(expression: i) {
@@ -61,7 +61,7 @@ class SolutionViewController: UIViewController {
         return eqtComponents
     }
     
-    func getExprInBracket(_ expr: String) -> String {
+    private func getExprInBracket(_ expr: String) -> String {
         var exprInBracket = ""
         for i in 0..<(expr.count - 1) {
             exprInBracket += String(expr[i])
@@ -70,7 +70,7 @@ class SolutionViewController: UIViewController {
     }
     
     //expands expretion if it contains brackets
-    func expand(_ expression: String) -> [String] {
+    private func expand(_ expression: String) -> [String] {
         
         let expr = expression.split(separator: "(")
         
@@ -99,7 +99,7 @@ class SolutionViewController: UIViewController {
     }
     
     //changes variable sign
-    func changeVariableSign(variable: String) -> String {
+    private func changeVariableSign(variable: String) -> String {
         let char = variable[0]
         if char == "+" {
             return variable.replacingOccurrences(of: "+", with: "-")
@@ -111,7 +111,7 @@ class SolutionViewController: UIViewController {
     }
     
     //gets coefficient of variable
-    func getCoefficient(variable: String) -> Int {
+    private func getCoefficient(variable: String) -> Int {
         var coefficient = ""
         if variable.count == 1 {
             return 1
@@ -145,7 +145,7 @@ class SolutionViewController: UIViewController {
         return Int(coefficient)!
     }
     // collects quadratic eqt components in same array
-    func collectComponentsOfQuadraticEqt(_ leftHandSide: [String], _ rightHandSide: [String]) -> [[String]] {
+    private func collectComponentsOfQuadraticEqt(_ leftHandSide: [String], _ rightHandSide: [String]) -> [[String]] {
         var quadr = [String]()
         var variables = [String]()
         var constants = [String]()
@@ -197,7 +197,7 @@ class SolutionViewController: UIViewController {
     }
     
     //collects like terms in same array
-    func collectLikeTerms (leftHandSide: [String], rightHandSide: [String]) -> [[String]] {
+    private func collectLikeTerms (leftHandSide: [String], rightHandSide: [String]) -> [[String]] {
         var variables = [String]()
         var constants = [String]()
         for i in 0..<leftHandSide.count {
@@ -249,7 +249,7 @@ class SolutionViewController: UIViewController {
     }
     
     //merges left and right hand sides for displaying on app
-    func getSolution(leftHandSide: [String], rightHandSide: [String]) -> String {
+    private func getSolution(leftHandSide: [String], rightHandSide: [String]) -> String {
         
         var leftHandSolution = ""
         var rightHandSolution = ""
@@ -273,7 +273,7 @@ class SolutionViewController: UIViewController {
         return leftHandSolution + " = " + rightHandSolution
         
     }
-    func simplifyQuadrExpression(expression: [String]) -> String {
+    private func simplifyQuadrExpression(expression: [String]) -> String {
         var coeficiant = 0
         for i in 0..<expression.count {
             let comp = expression[i]
@@ -301,7 +301,7 @@ class SolutionViewController: UIViewController {
         return String(coeficiant) + "xˆ2"
     }
     
-    func findSolutionOfQuadraticEqt(a: Double, b: Double, c: Double) -> [String] {
+    private func findSolutionOfQuadraticEqt(a: Double, b: Double, c: Double) -> [String] {
         var result = [String]()
         
         let discriminant: Double = Double((b*b) - 4 * a * c)
@@ -325,7 +325,7 @@ class SolutionViewController: UIViewController {
     }
     
     //simplifies variables
-    func simplifyExpression(expression: [String]) -> String {
+    private func simplifyExpression(expression: [String]) -> String {
         var coefficient: Double = 0
 
         for i in expression {
@@ -379,7 +379,7 @@ class SolutionViewController: UIViewController {
     }
     
     //simplifies constants
-    func simplifyConstants(constants: [String]) -> String {
+    private func simplifyConstants(constants: [String]) -> String {
         var constSum: Double = 0
         for number in constants {
             if let digit = Double(number) {
@@ -409,7 +409,7 @@ class SolutionViewController: UIViewController {
         return String(constSum)
     }
     //gets the variable and the sign in getSolution method.
-    func getSolutionVar(variable: String) -> String {
+    private func getSolutionVar(variable: String) -> String {
         let firstChar = variable[0]
         if firstChar == "+" {
             return variable.replacingOccurrences(of: "+", with: "+ ")
@@ -420,7 +420,7 @@ class SolutionViewController: UIViewController {
     }
     
     
-    func displaySteps(labelText: String , equation: String) {
+    private func displaySteps(labelText: String , equation: String) {
         let label = UILabel()
         let equationLabel = UILabel()
         
@@ -450,7 +450,7 @@ class SolutionViewController: UIViewController {
         contentViewHeight += label.frame.size.height + equationLabel.frame.size.height
     }
     
-    func solve(equation: String) {
+    private func solve(equation: String) {
         
         let leftHandSide = String(equation.split(separator: "=")[0])
         let rightHandSide = String(equation.split(separator: "=")[1])
