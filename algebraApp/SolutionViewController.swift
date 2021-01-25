@@ -9,10 +9,10 @@
 import UIKit
 
 class SolutionViewController: UIViewController {
-    
-    let variable = "x"
+    //instance variables
     var equation = ""
-    var contentViewHeight: CGFloat = 0
+    private let variable = "x"
+    private var contentViewHeight: CGFloat = 0
     
     @IBOutlet weak var scrollContent: UIView!
     override func viewDidLoad() {
@@ -84,7 +84,6 @@ class SolutionViewController: UIViewController {
                     result.append(String(constant))
                     
                 } else {
-                    print(equation)
                     let newCoef = getCoefficient(variable: exprInBracket[i]) * multiplier!
                     result.append(String(newCoef) + variable)
                 }
@@ -190,7 +189,6 @@ class SolutionViewController: UIViewController {
         result[0] = quadr
         result[1] = variables
         result[2] = constants
-        print(result)
         
         return result
 
@@ -423,20 +421,20 @@ class SolutionViewController: UIViewController {
     private func displaySteps(labelText: String , equation: String) {
         let label = UILabel()
         let equationLabel = UILabel()
-        
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .left
         label.numberOfLines = 0
         label.frame.size.width = self.scrollContent.frame.width - 10
-        label.frame.size.height = 100
         label.text = labelText
         label.font = label.font.withSize(19)
+        let needSizeForLabel = label.sizeThatFits(CGSize(width: label.frame.size.width, height: CGFloat.greatestFiniteMagnitude))
         
         equationLabel.translatesAutoresizingMaskIntoConstraints = false
         equationLabel.textAlignment = .left
         equationLabel.frame.size.width = self.scrollContent.frame.width - 10
         equationLabel.text = equation
         equationLabel.font = equationLabel.font.withSize(17)
+        let needSizeForEquationLabel = equationLabel.sizeThatFits(CGSize(width: equationLabel.frame.size.width, height: CGFloat.greatestFiniteMagnitude))
         
         scrollContent.addSubview(equationLabel)
         scrollContent.addSubview(label)
@@ -446,8 +444,8 @@ class SolutionViewController: UIViewController {
              label.trailingAnchor.constraint(equalTo: scrollContent.trailingAnchor),
              label.leadingAnchor.constraint(equalTo: scrollContent.leadingAnchor),
             equationLabel.topAnchor.constraint(equalTo: label.layoutMarginsGuide.bottomAnchor, constant: 10)])
+        contentViewHeight += needSizeForLabel.height + needSizeForEquationLabel.height + 30
         
-        contentViewHeight += label.frame.size.height + equationLabel.frame.size.height
     }
     
     private func solve(equation: String) {
@@ -458,7 +456,6 @@ class SolutionViewController: UIViewController {
         //spliting two sides of equation
         var leftHandSideArr = split(equation: leftHandSide)
         var rightHandSideArr = split(equation: rightHandSide)
-        print(leftHandSide)
         if containsBracket(expression: equation) {
             if containsBracket(expression: leftHandSide)  {
                 leftHandSideArr = openBracket(equationComponents: leftHandSideArr)
